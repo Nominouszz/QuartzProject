@@ -29,8 +29,28 @@ namespace QuartzProject
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    
-                    
+
+                    services.AddSingleton<IJobFactory, MyJobFactory>();
+                    services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+
+                    #region Adding JobType
+                    services.AddSingleton<NotificationJob>();
+                    //services.AddSingleton<SendingEmailJob>();
+                    //services.AddSingleton<LoggerJob>();
+                    #endregion
+
+                    // services.AddScoped<JobMetaData>();
+
+                    #region Adding Jobs 
+                    services.AddSingleton(new JobMetaData(Guid.NewGuid(), typeof(NotificationJob), "Notify Job", "0/5 * * * * ? *")); //5 sec working
+
+                    //services.AddSingleton(new JobMetaData(Guid.NewGuid(), typeof(SendingSMSJob), "Sending SMS", "* * * ? * *"));
+                    //services.AddSingleton(new JobMetaData(Guid.NewGuid(), typeof(SendingEmailJob), "Sending Email", ConfigurationManager.AppSettings["CronExp-5min"]));
+                    #endregion
+
+
+
+                    services.AddHostedService<MyScheduler>();
                 });
     }
 }
